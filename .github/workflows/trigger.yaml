@@ -1,0 +1,37 @@
+name: Trigger
+on:
+  workflow_dispatch:
+  repository_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      BIT_CONFIG_ACCESS_TOKEN: ${{ secrets.BIT_CONFIG_ACCESS_TOKEN }}
+      GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
+      GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
+    steps:
+      - name: Log Payload
+        run: |
+          echo "Trigger Payload:"
+          echo "${{ toJson(github.event) }}" > payload.json
+          cat payload.json
+          
+      - name: Parse Payload
+        run: |
+          echo "Extracting specific fields from the payload..."
+          echo "Job ID: $(jq -r '.jobId' payload.json)"
+          echo "Owner: $(jq -r '.owner' payload.json)"
+          echo "Name: $(jq -r '.name' payload.json)"
+          echo "Scope IDs: $(jq -r '.scopeIds' payload.json)"
+          echo "Slug: $(jq -r '.slug' payload.json)"
+          echo "Username: $(jq -r '.username' payload.json)"
+          echo "User ID: $(jq -r '.userId' payload.json)"
+          echo "Started At: $(jq -r '.startedAt' payload.json)"
+          echo "Phase: $(jq -r '.phase' payload.json)"
+          echo "Finished At: $(jq -r '.finishedAt' payload.json)"

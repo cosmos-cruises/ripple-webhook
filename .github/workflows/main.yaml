@@ -1,0 +1,27 @@
+name: Tag and Export
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      BIT_CONFIG_ACCESS_TOKEN: ${{ secrets.BIT_CONFIG_ACCESS_TOKEN }}
+      GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
+      GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Initialize Bit
+        uses: bit-tasks/init@v2
+      - name: Bit Tag and Export
+        run: |
+          bit tag && bit export
